@@ -191,19 +191,43 @@ class TestProductRoutes(TestCase):
     # ----------------------------------------------------------
 
     def test_update_product(self):
+        """It should update existing product by given id"""
         test_product = ProductFactory()
-
         response = self.client.post(BASE_URL, json=test_product.serialize())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         new_product = response.get_json()
         new_product['description'] = 'unknown'
-    
+
         response = self.client.put(BASE_URL + '/' + str(new_product["id"]), json=new_product)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_product = response.get_json()
         self.assertEqual(updated_product["description"], 'unknown')
 
+    def test_update_not_found(self):
+        """It should attempt to update non-existent product and return 'not found' error"""
+        test_product = ProductFactory()
+        response = self.client.put(BASE_URL + '/' + str(0), json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # ----------------------------------------------------------
+    # TEST DELETE
+    # ----------------------------------------------------------
+
+    def test_delete_a_product(self):
+        """It should delete a product by the product id provided"""
+        test_product = self._create_products(1)[0]
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_product = response.get_json()
+
+        response = self.client.delete(BASE_URL + '/' + str(new_product["id"]))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_a_product_not_found(self):
+        """It should attempt to delete a non-existent product by id provided"""
+        response = self.client.delete(BASE_URL + '/' + str(0))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     ######################################################################
     # Utility functions
