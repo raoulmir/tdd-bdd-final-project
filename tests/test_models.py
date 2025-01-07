@@ -138,7 +138,7 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(len(products), 1)
         self.assertEqual(products[0].id, product.id)
         self.assertEqual(products[0].description, updated_description)
-    
+
     def test_delete_a_product(self):
         """It should delete a specified existing product"""
         product = ProductFactory()
@@ -160,9 +160,9 @@ class TestProductModel(unittest.TestCase):
         for product in range(5):
             product = ProductFactory()
             product.create()
-        
+
         self.assertEqual(len(Product.all()), 5)
-    
+
     def test_find_product_by_name(self):
         """It should find a product specified by the name"""
         products = ProductFactory.create_batch(5)
@@ -170,22 +170,23 @@ class TestProductModel(unittest.TestCase):
             product.create()
 
         name = products[0].name
-        
+
         hits = [hit for hit in Product.all() if name in hit.name]
         count = len(hits)
 
         search = Product.find_by_name(name)
-        
+
         self.assertEqual(len(list(search)), count)
 
         for result in search:
             self.assertEqual(name, result.name)
 
     def test_find_product_by_availability(self):
+        """It should find a product by specified availability"""
         products = ProductFactory.create_batch(10)
         for product in products:
             product.create()
-        
+
         availability = products[0].available
 
         hits = [hit for hit in Product.all() if availability is hit.available]
@@ -197,8 +198,9 @@ class TestProductModel(unittest.TestCase):
 
         for result in search:
             self.assertEqual(availability, result.available)
-    
+
     def test_find_product_by_category(self):
+        """It should find product by specified category"""
         products = ProductFactory.create_batch(10)
         for product in products:
             product.create()
