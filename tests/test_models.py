@@ -27,7 +27,7 @@ import os
 import logging
 import unittest
 from decimal import Decimal
-from service.models import Product, Category, db
+from service.models import Product, Category, db, DataValidationError
 from service import app
 from tests.factories import ProductFactory
 
@@ -139,6 +139,21 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(products[0].id, product.id)
         self.assertEqual(products[0].description, updated_description)
 
+    def test_update_a_product_failure(self):
+        """It should fail approriately when updating product with a non-existing ID"""
+        updated_description = 'Update test description'
+
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        self.assertIsNotNone(product.id)
+
+        product.description = updated_description
+        product.id = None
+
+        with self.assertRaises(DataValidationError):
+            product.update()
+
     def test_delete_a_product(self):
         """It should delete a specified existing product"""
         product = ProductFactory()
@@ -215,3 +230,47 @@ class TestProductModel(unittest.TestCase):
 
         for result in search:
             self.assertEqual(category, result.category)
+
+    def test_deserialize_product_from_dict(self):
+        """It should deserialize dictionary of product"""
+        product = ProductFactory()
+        product.id = None
+        dictionary = product.serialize()
+        self.assertIsInstance(dictionary, dict)
+        self.assertIsInstance(product.deserialize(dictionary), Product)
+
+    def test_deserialize_from_object(self):
+        """It should raise a data validation exception when trying to deserialize instance of Product"""
+        product = ProductFactory()
+        product.id = None
+        with self.assertRaises(DataValidationError):
+            self.assertRaises(TypeError, product.deserialize, product)
+
+    def test_deserialize_from_product_with_missing_key(self):
+        """It should raise a data validation exception when the price field is missing"""
+        product = ProductFactory()
+        product.id = None
+        dictionary = product.serialize()
+        del(dictionary['price'])
+        with self.assertRaises(DataValidationError):
+            self.assertRaises(KeyError, product.deserialize, dictionary)
+
+    def test_deserialize_product_with_attribute_error(self):
+        """It should raise a data validation exception when the 'category' is set to one not defined by enum"""
+        product = ProductFactory()
+        product.id = None
+        dictionary = product.serialize()
+        self.assertIsInstance(dictionary, dict)
+        dictionary['category'] = 'MACHINE'
+        with self.assertRaises(DataValidationError):
+            self.assertRaises(AttributeError, product.deserialize, dictionary)
+
+    def test_deserialize_product_with_invalid_availability(self):
+        """It should raise a data validation exception when availability value is of wrong data type"""
+        product = ProductFactory()
+        product.id = None
+        dictionary = product.serialize()
+        self.assertIsInstance(dictionary, dict)
+        dictionary['available'] = 'SUPERPOSITION'
+        with self.assertRaises(DataValidationError):
+            product.deserialize(dictionary)
