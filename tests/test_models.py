@@ -231,6 +231,23 @@ class TestProductModel(unittest.TestCase):
         for result in search:
             self.assertEqual(category, result.category)
 
+    def test_find_product_by_price(self):
+        """It should find a product by a specified price"""
+        products = ProductFactory.create_batch(10)
+        for product in products:
+            product.create()
+        
+        price = products[0].price
+        hits = [hit for hit in Product.all() if price is hit.price]
+        count = len(hits)
+
+        search = Product.find_by_price(price)
+
+        self.assertEqual(len(list(search)), count)
+
+        for result in search:
+            self.assertEqual(price, result.price)
+
     def test_deserialize_product_from_dict(self):
         """It should deserialize dictionary of product"""
         product = ProductFactory()
