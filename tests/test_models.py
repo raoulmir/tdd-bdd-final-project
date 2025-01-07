@@ -236,7 +236,7 @@ class TestProductModel(unittest.TestCase):
         products = ProductFactory.create_batch(10)
         for product in products:
             product.create()
-        
+
         price = products[0].price
         hits = [hit for hit in Product.all() if price is hit.price]
         count = len(hits)
@@ -268,7 +268,7 @@ class TestProductModel(unittest.TestCase):
         product = ProductFactory()
         product.id = None
         dictionary = product.serialize()
-        del(dictionary['price'])
+        del dictionary['price']
         with self.assertRaises(DataValidationError):
             self.assertRaises(KeyError, product.deserialize, dictionary)
 
