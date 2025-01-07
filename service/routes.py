@@ -106,10 +106,20 @@ def create_products():
 # R E A D   A   P R O D U C T
 ######################################################################
 
-#
-# PLACE YOUR CODE HERE TO READ A PRODUCT
-#
+@app.route('/products/<product_id>',methods=['GET'])
+def get_products(product_id):
+    product = Product.find(product_id)
 
+    location_url = url_for("get_products", product_id=product_id, _external=True)
+
+    app.logger.info(product)
+
+    if product is None:
+        return jsonify("Product not found"), status.HTTP_404_NOT_FOUND, {"Location": location_url}
+    
+    product_id = product.id
+    return jsonify(Product.serialize(product)), status.HTTP_200_OK, {"Location": location_url}
+    
 ######################################################################
 # U P D A T E   A   P R O D U C T
 ######################################################################
