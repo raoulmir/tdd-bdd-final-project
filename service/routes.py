@@ -106,7 +106,7 @@ def create_products():
 # R E A D   A   P R O D U C T
 ######################################################################
 
-@app.route('/products/<product_id>',methods=['GET'])
+@app.route('/products/<product_id>', methods=['GET'])
 def get_products(product_id):
     """
     Get a Product
@@ -120,10 +120,11 @@ def get_products(product_id):
 
     if product is None:
         return jsonify("Product not found"), status.HTTP_404_NOT_FOUND, {"Location": location_url}
-    
+
     product_id = product.id
     return jsonify(Product.serialize(product)), status.HTTP_200_OK, {"Location": location_url}
-    
+
+
 ######################################################################
 # U P D A T E   A   P R O D U C T
 ######################################################################
@@ -140,10 +141,9 @@ def update_products(product_id):
     product = Product.find(product_id)
 
     if product is None:
-        abort()
-        return HTTP_404_NOT_FOUND
+        abort(status.HTTP_404_NOT_FOUND)
 
-    product.deserialize(data=request.get_json()) 
+    product.deserialize(data=request.get_json())
 
     product.update()
 
@@ -156,7 +156,21 @@ def update_products(product_id):
 # D E L E T E   A   P R O D U C T
 ######################################################################
 
+@app.route('/products/<product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    """
+    Delete a product
+    This endpoint will delete a product based on the product id provided in the query parameter
+    """
+    app.logger.info("Request to Delete a product with id [%s]", product_id)
 
-#
-# PLACE YOUR CODE TO DELETE A PRODUCT HERE
-#
+    product = Product.find(product_id)
+
+    if product is None:
+        abort(status.HTTP_404_NOT_FOUND)
+
+    location_url = url_for("update_products", product_id=product_id, _external=True)
+
+    product.delete()
+
+    return "", status.HTTP_204_NO_CONTENT, {"Location": location_url}
