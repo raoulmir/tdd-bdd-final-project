@@ -108,6 +108,10 @@ def create_products():
 
 @app.route('/products/<product_id>',methods=['GET'])
 def get_products(product_id):
+    """
+    Get a Product
+    This endpoint will get a product based on the product_id provided in the query parameter
+    """
     product = Product.find(product_id)
 
     location_url = url_for("get_products", product_id=product_id, _external=True)
@@ -124,9 +128,29 @@ def get_products(product_id):
 # U P D A T E   A   P R O D U C T
 ######################################################################
 
-#
-# PLACE YOUR CODE TO UPDATE A PRODUCT HERE
-#
+@app.route('/products/<product_id>', methods=['PUT'])
+def update_products(product_id):
+    """
+    Update a Product
+    This endpoint will update a Product based on the body that is posted
+    """
+    app.logger.info("Request to Update a product with id [%s]", product_id)
+    check_content_type("application/json")
+
+    product = Product.find(product_id)
+
+    if product is None:
+        abort()
+        return HTTP_404_NOT_FOUND
+
+    product.deserialize(data=request.get_json()) 
+
+    product.update()
+
+    location_url = url_for("update_products", product_id=product_id, _external=True)
+
+    return jsonify(Product.serialize(product)), status.HTTP_200_OK, {"Location": location_url}
+
 
 ######################################################################
 # D E L E T E   A   P R O D U C T
