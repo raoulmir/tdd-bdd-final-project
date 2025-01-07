@@ -191,11 +191,17 @@ class TestProductRoutes(TestCase):
     # ----------------------------------------------------------
 
     def test_update_product(self):
-        test_product = self._create_products(1)[0]
-        test_product.name = test_product.name + '-UPDATED'
-        
-        response = self.client.put(BASE_URL, json={test_product})
-        self.assertEqual(response.status, HTTP_200_OK)
+        test_product = ProductFactory()
+
+        response = self.client.post(BASE_URL, Product.serialize(test_product))
+        self.assertEqual(response.status_code, HTTP_201_CREATED
+        new_product = response.get_json()
+        new_product["description"] = 'unknown'
+    
+        response = self.client.put(BASE_URL, json={new_product})
+        self.assertEqual(update.status, HTTP_200_OK)
+        updated_product = response.get_json()
+        self.assertEqual(updated_product["description"], 'unknown')
 
 
     ######################################################################
