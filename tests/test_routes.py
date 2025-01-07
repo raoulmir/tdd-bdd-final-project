@@ -199,8 +199,8 @@ class TestProductRoutes(TestCase):
         new_product = response.get_json()
         new_product['description'] = 'unknown'
     
-        response = self.client.put(BASE_URL, json=new_product)
-        self.assertEqual(update.status, status.HTTP_200_OK)
+        response = self.client.put(BASE_URL + '/' + str(new_product["id"]), json=new_product)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_product = response.get_json()
         self.assertEqual(updated_product["description"], 'unknown')
 
