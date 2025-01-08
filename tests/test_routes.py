@@ -251,7 +251,20 @@ class TestProductRoutes(TestCase):
 
     def test_list_by_name(self):
         """It should return a list of products queried by their name"""
-        
+        test_products = self._create_products(10)
+        test_name = test_products[0].name
+        name_count = len([hit for hit in test_products if hit.name == test_name])
+
+        response = self.client.get(
+            BASE_URL + '/name/', query_string=f"name={quote_plus(test_name)}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        products = response.get_json()
+        self.assertEqual(len(products), name_count)
+
+        for product in products:
+            self.assertEqual(product["name"], test_name)
 
 
     ######################################################################
