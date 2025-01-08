@@ -246,7 +246,7 @@ class TestProductRoutes(TestCase):
         self.assertEqual(len(products), 10)
 
     # ----------------------------------------------------------
-    # TEST LIST ALL
+    # TEST LIST NAME
     # ----------------------------------------------------------
 
     def test_list_by_name(self):
@@ -256,7 +256,7 @@ class TestProductRoutes(TestCase):
         name_count = len([hit for hit in test_products if hit.name == test_name])
 
         response = self.client.get(
-            BASE_URL + '/name/', query_string=f"name={quote_plus(test_name)}"
+            BASE_URL, query_string=f"name={quote_plus(test_name)}"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -266,6 +266,26 @@ class TestProductRoutes(TestCase):
         for product in products:
             self.assertEqual(product["name"], test_name)
 
+
+    # ----------------------------------------------------------
+    # TEST LIST NAME
+    # ----------------------------------------------------------
+
+    def test_list_by_category(self):
+        test_products = self._create_products(10)
+        test_category = test_products[0].category
+        category_count = len([hit for hit in test_products if hit.category == test_category])
+
+        response = self.client.get(
+            BASE_URL, query_string=f"category={test_category.name}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        products = response.get_json()
+        self.assertEqual(len(products), category_count)
+
+        for product in products:
+            self.assertEqual(product["category"], test_category.name)
 
     ######################################################################
     # Utility functions
