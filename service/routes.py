@@ -98,9 +98,25 @@ def create_products():
 # L I S T   A L L   P R O D U C T S
 ######################################################################
 
-#
-# PLACE YOUR CODE TO LIST ALL PRODUCTS HERE
-#
+@app.route('/products', methods=['GET'])
+def get_all_products():
+    """Returns a list of Products"""
+    app.logger.info("Request to list Products...")
+    
+    products = Product.all()
+
+    app.logger.info(products)
+
+    if len(products) < 1:
+        abort(status.HTTP_404_NOT_FOUND)
+    
+    serialized_products = []
+    for product in products:
+        serialized_products.append(product.serialize())
+        
+    app.logger.info("Number of products: [%s]", len(serialized_products))
+
+    return jsonify(serialized_products), status.HTTP_200_OK
 
 ######################################################################
 # R E A D   A   P R O D U C T
