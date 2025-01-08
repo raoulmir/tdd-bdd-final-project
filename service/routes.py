@@ -118,6 +118,27 @@ def get_all_products():
 
     return jsonify(serialized_products), status.HTTP_200_OK
 
+@app.route('/products/name/', methods=['GET'])
+def get_products_by_name():
+    """Return a list of products that match the name provided"""
+    app.logger.info("Request to list Products by name...")
+    name = request.args.get("name")
+    products = []
+
+    if name:
+        app.logger.info("Find by name: %s", name)
+        products = Product.find_by_name(name)
+    else:
+        products = Product.all()
+        app.logger.info("Find all")
+
+    serialized_products = [product.serialize() for product in products]
+        
+    app.logger.info("Number of products with name [%s]: [%s]", name, len(serialized_products))
+
+    return serialized_products, status.HTTP_200_OK
+
+
 ######################################################################
 # R E A D   A   P R O D U C T
 ######################################################################
