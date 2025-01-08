@@ -298,7 +298,7 @@ class TestProductRoutes(TestCase):
         availability_count = len([hit for hit in test_products if hit.available == test_availability])
 
         response = self.client.get(
-            BASE_URL, query_string=f"availability={test_availability}"
+            BASE_URL, query_string=f"available={test_availability}"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
