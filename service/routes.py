@@ -20,7 +20,7 @@ Product Store Service with UI
 """
 from flask import jsonify, request, abort
 from flask import url_for  # noqa: F401 pylint: disable=unused-import
-from service.models import Product
+from service.models import Product, Category
 from service.common import status  # HTTP Status Codes
 from . import app
 
@@ -103,12 +103,20 @@ def get_all_products():
     """Returns a list of Products"""
     app.logger.info("Request to list Products...")
     
-    products = Product.all()
+    name = request.args.get("name")
+    category = request.args.get("category")
+    products = []
 
-    app.logger.info(products)
-
-    if len(products) < 1:
-        abort(status.HTTP_404_NOT_FOUND)
+    if name:
+        app.logger.info("Find by name: %s", name)
+        products = Product.find_by_name(name)
+    elif category:
+        app.logger.info("Find by category %s", category)
+        category_value = getattr(Category, category.upper())
+        products = Product.find_by_category(category_value)
+    else:
+        products = Product.all()
+        app.logger.info("Find all")
     
     serialized_products = []
     for product in products:
@@ -117,26 +125,6 @@ def get_all_products():
     app.logger.info("Number of products: [%s]", len(serialized_products))
 
     return jsonify(serialized_products), status.HTTP_200_OK
-
-@app.route('/products/name/', methods=['GET'])
-def get_products_by_name():
-    """Return a list of products that match the name provided"""
-    app.logger.info("Request to list Products by name...")
-    name = request.args.get("name")
-    products = []
-
-    if name:
-        app.logger.info("Find by name: %s", name)
-        products = Product.find_by_name(name)
-    else:
-        products = Product.all()
-        app.logger.info("Find all")
-
-    serialized_products = [product.serialize() for product in products]
-        
-    app.logger.info("Number of products with name [%s]: [%s]", name, len(serialized_products))
-
-    return serialized_products, status.HTTP_200_OK
 
 
 ######################################################################
