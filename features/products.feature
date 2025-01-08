@@ -111,10 +111,21 @@ Scenario: List all products
 Scenario: Search Product by category
     When I visit the "Home Page"
     And I press the "Clear" button
-    And I set "CLOTHS" in the "Category" dropdown
+    And I select "Cloths" from the "Category" dropdown
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "Hat" in the results
-    And I should see "Shoe" in the results
+    And I should see "Shoes" in the results
+    And I should not see "Big Mac" in the results
+    And I should not see "Sheets" in the results
+
+Scenario: Search Product by availability
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I select "False" from the "Available" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Shoes" in the results
+    And I should not see "Hat" in the results
     And I should not see "Big Mac" in the results
     And I should not see "Sheets" in the results
