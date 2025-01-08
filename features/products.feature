@@ -73,6 +73,7 @@ Scenario: Update a Product
     When I copy the "Id" field
     And I press the "Clear" button
     And I paste the "Id" field
+    And I press the "Retrieve" button
     Then I should see the message "Success"
     And I should see "True" in the "Available" dropdown
     When I press the "Clear" button
@@ -80,3 +81,20 @@ Scenario: Update a Product
     Then I should see the message "Success"
     And I should see "True" in the "Available" results
     And I should not see "False" in the "Available" results
+
+Scenario: Delete a Product
+    When I visit the "Home Page"
+    And I set the "Name" to "Big Mac"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "1/4 lb burger" in the "Description" field
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Delete" button
+    Then I should see the message "Product has been Deleted!"
+    When I press the "Clear" button
+    And press the "Search" button
+    I should see the message "Success"
+    And I should not see "Big Mac" in the results
+
