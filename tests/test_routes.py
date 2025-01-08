@@ -32,6 +32,7 @@ from service import app
 from service.common import status
 from service.models import db, init_db, Product
 from tests.factories import ProductFactory
+from urllib.parse import quote_plus
 
 # Disable all but critical errors during normal test run
 # uncomment for debugging failing tests
@@ -228,6 +229,30 @@ class TestProductRoutes(TestCase):
         """It should attempt to delete a non-existent product by id provided"""
         response = self.client.delete(BASE_URL + '/' + str(0))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # ----------------------------------------------------------
+    # TEST LIST ALL
+    # ----------------------------------------------------------
+
+    def test_list_all_products(self):
+        """It should list all available products"""
+        test_products = self._create_products(10)
+
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+       
+        products = response.get_json()
+
+        self.assertEqual(len(products), 10)
+
+    # ----------------------------------------------------------
+    # TEST LIST ALL
+    # ----------------------------------------------------------
+
+    def test_list_by_name(self):
+        """It should return a list of products queried by their name"""
+        
+
 
     ######################################################################
     # Utility functions
