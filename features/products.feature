@@ -95,7 +95,7 @@ Scenario: Delete a Product
     Then I should see the message "Product has been Deleted!"
     When I press the "Clear" button
     And press the "Search" button
-    I should see the message "Success"
+    Then I should see the message "Success"
     And I should not see "Big Mac" in the results
 
 Scenario: List all products
