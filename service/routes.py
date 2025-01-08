@@ -102,7 +102,7 @@ def create_products():
 def get_all_products():
     """Returns a list of Products"""
     app.logger.info("Request to list Products...")
-    
+
     name = request.args.get("name")
     category = request.args.get("category")
     availability = request.args.get("availability")
@@ -121,11 +121,11 @@ def get_all_products():
     else:
         products = Product.all()
         app.logger.info("Find all")
-    
+
     serialized_products = []
     for product in products:
         serialized_products.append(product.serialize())
-        
+
     app.logger.info("Number of products: [%s]", len(serialized_products))
 
     return jsonify(serialized_products), status.HTTP_200_OK

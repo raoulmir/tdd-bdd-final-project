@@ -28,11 +28,11 @@ import os
 import logging
 from decimal import Decimal
 from unittest import TestCase
+from urllib.parse import quote_plus
 from service import app
 from service.common import status
 from service.models import db, init_db, Product
 from tests.factories import ProductFactory
-from urllib.parse import quote_plus
 
 # Disable all but critical errors during normal test run
 # uncomment for debugging failing tests
@@ -236,11 +236,11 @@ class TestProductRoutes(TestCase):
 
     def test_list_all_products(self):
         """It should list all available products"""
-        test_products = self._create_products(10)
+        self._create_products(10)
 
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-       
+
         products = response.get_json()
 
         self.assertEqual(len(products), 10)
@@ -250,7 +250,7 @@ class TestProductRoutes(TestCase):
     # ----------------------------------------------------------
 
     def test_list_by_name(self):
-        """It should return a list of products queried by their name"""
+        """It should return a list of products queried by name"""
         test_products = self._create_products(10)
         test_name = test_products[0].name
         name_count = len([hit for hit in test_products if hit.name == test_name])
@@ -266,12 +266,12 @@ class TestProductRoutes(TestCase):
         for product in products:
             self.assertEqual(product["name"], test_name)
 
-
     # ----------------------------------------------------------
     # TEST LIST CATEGORY
     # ----------------------------------------------------------
 
     def test_list_by_category(self):
+        """It should return a list of products queried by category"""
         test_products = self._create_products(10)
         test_category = test_products[0].category
         category_count = len([hit for hit in test_products if hit.category == test_category])
@@ -280,19 +280,19 @@ class TestProductRoutes(TestCase):
             BASE_URL, query_string=f"category={test_category.name}"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         products = response.get_json()
         self.assertEqual(len(products), category_count)
 
         for product in products:
             self.assertEqual(product["category"], test_category.name)
 
-
     # ----------------------------------------------------------
     # TEST LIST AVAILABILITY
     # ----------------------------------------------------------
 
     def test_list_by_availability(self):
+        """It should return a list of products queries by availability"""
         test_products = self._create_products(10)
         test_availability = test_products[0].available
         availability_count = len([hit for hit in test_products if hit.available == test_availability])
@@ -301,7 +301,7 @@ class TestProductRoutes(TestCase):
             BASE_URL, query_string=f"availability={test_availability}"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         products = response.get_json()
         self.assertEqual(len(products), availability_count)
 
